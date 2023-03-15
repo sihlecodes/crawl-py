@@ -13,6 +13,8 @@ group = parser.add_mutually_exclusive_group()
 group.add_argument("-i", "--include", type=re.compile, help="Takes a regex pattern, only files matching the pattern will be targeted for retrieval. Matching is done on both files and directories.")
 group.add_argument("-x", "--exclude", type=re.compile, help="Takes a regex pattern, only files not matching the pattern will be targeted for retrieval. Matching is done on both files and directories.")
 
+global overwrite_all
+
 def crawl(parent, args):
     print(parent)
     if not os.path.exists(parent):
@@ -55,7 +57,21 @@ def crawl(parent, args):
                 if args.dry:
                     print("mv", old_path, new_path)
                 else:
-                    shutil.move(old_path, new_path)
+                    overwrite = True
+                                        
+                    if os.path.exists(new_path) and not overwrite_all:
+                        old_fsize = os.path.getsize(old_path)
+                        new_fsize = os.path.getsize(new_path)
+                        
+                        print(new_path, "already exists.")
+                    
+                        response = input("Overwrite? ")
+
+                        overwrite = re.match("Y(e|es)?", response, re.IGNORECASE)
+                        overwrite_all = re.match("A(l|ll)?", response, re.IGNORECASE)
+
+                    if overwrite or overwrite_all:
+                        shutil.move(old_path, new_path)
 
 if __name__ == "__main__":
     args = parser.parse_args()
