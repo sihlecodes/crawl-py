@@ -7,16 +7,24 @@ parser = argparse.ArgumentParser(description="Recursively moves files in subdire
 parser.add_argument("path", metavar="PATH", nargs="?", default=".", help="The root path where crawling should begin")
 parser.add_argument("-v", "--verbose", action="store_true", help="Logs extra information")
 parser.add_argument("-d", "--dry", action="store_true", help="Only prints move operations. Does not move files.")
+parser.add_argument("-a", "--all", action="store_true", help="Includes hidden paths for crawling.")
 
 group = parser.add_mutually_exclusive_group()
 
 group.add_argument("-i", "--include", type=re.compile, help="Takes a regex pattern, only files matching the pattern will be targeted for retrieval. Matching is done on both files and directories.")
 group.add_argument("-x", "--exclude", type=re.compile, help="Takes a regex pattern, only files not matching the pattern will be targeted for retrieval. Matching is done on both files and directories.")
 
-global overwrite_all
+
+overwrite_all = False
 
 def crawl(parent, args):
-    print(parent)
+    global overwrite_all
+
+    if not args.all and re.match(r"\..+", parent):
+        if args.verbose:
+            print("skipping: " + parent)
+        return
+    
     if not os.path.exists(parent):
         print(f"{parent}: folder does not exist.")
         return
