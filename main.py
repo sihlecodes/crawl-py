@@ -4,7 +4,7 @@ import shutil
 import os
 
 parser = argparse.ArgumentParser(description="""
-    A script that recursively moves nested files to a common destination directory.
+    A script for quickly moving nested files to a common destination directory.
     Moves all files if --include or --exclude patterns are not supplied.""")
 
 parser.add_argument("source", metavar="SOURCE", nargs="*", default=["."],
@@ -20,7 +20,7 @@ parser.add_argument("-D", "--dry", action="store_true",
     help="only prints move operations. Does not move files.")
 
 parser.add_argument("-a", "--all", action="store_true",
-    help="includes hidden paths for crawling.")
+    help="includes hidden directories during crawl.")
 
 group = parser.add_mutually_exclusive_group()
 
@@ -101,10 +101,7 @@ def crawl(parent, args):
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    
-    # print(args)
 
-    # exit()
     if args.verbose:
         print("Crawl in progress... DO NOT CANCEL")
     
